@@ -20,3 +20,23 @@
 #settings_plugin_octodashcompanion > h4 > small {
     font-size: 12px;
 }
+
+.themeify.discorded #settings_plugin_octodashcompanion div.well {
+    background-color: #2f3136;
+    border-color: #2f3136;
+}
+
+.themeify.nighttime #settings_plugin_octodashcompanion div.well {
+    background-color: #2f3136;
+    border-color: #2f3136;
+}
+
+.themeify.discoranged #settings_plugin_octodashcompanion div.well {
+    background-color: #2f3136;
+    border-color: #fc8003;
+}
+
+.themeify.cyborg #settings_plugin_octodashcompanion div.well {
+    background-color: #121417;
+    border-color: #121417;
+}
