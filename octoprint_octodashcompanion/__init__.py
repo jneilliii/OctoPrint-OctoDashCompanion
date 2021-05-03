@@ -130,6 +130,17 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 __plugin_name__ = "OctoDash Companion"
 __plugin_pythoncompat__ = ">=3.3,<4"  # only python 3.3+
+__plugin_settings_overlay__ = {'system': {'actions': [{'action': 'octodash_start',
+													   'command': 'sudo service getty@tty1 start',
+													   'name': 'Start OctoDash'},
+													  {'action': 'octodash_stop',
+													   'command': 'sudo service getty@tty1 stop',
+													   'name': 'Stop OctoDash',
+													   'confirm': 'You are about to shutdown OctoDash.'},
+													  {'action': 'octodash_restart',
+													   'command': 'sudo service getty@tty1 restart',
+													   'name': 'Restart OctoDash',
+													   'confirm': 'You are about to restart OctoDash.'}]}}
 
 
 def _default_configdir(applicationName):

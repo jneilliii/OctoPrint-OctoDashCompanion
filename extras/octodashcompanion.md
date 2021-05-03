@@ -3,100 +3,62 @@ layout: plugin
 
 id: octodashcompanion
 title: OctoDash Companion
-description: Plugin that allows editing of some configuration settings for OctoDash, specifically Custom Actions.
+description: This plugin allows for configuring OctoDash settings and upload custom theme files from within the OctoPrint interface.
 authors:
 - jneilliii
 license: MIT
 
-# TODO
-date: today's date in format YYYY-MM-DD, e.g. 2015-04-21
+date: 2021-05-03
 
 homepage: https://github.com/jneilliii/OctoPrint-OctoDashCompanion
 source: https://github.com/jneilliii/OctoPrint-OctoDashCompanion
 archive: https://github.com/jneilliii/OctoPrint-OctoDashCompanion/archive/master.zip
 
-# TODO
-# Set this to true if your plugin uses the dependency_links setup parameter to include
-# library versions not yet published on PyPi. SHOULD ONLY BE USED IF THERE IS NO OTHER OPTION!
-#follow_dependency_links: false
-
-# TODO
 tags:
-- a list
-- of tags
-- that apply
-- to your plugin
-- (take a look at the existing plugins for what makes sense here)
+- OctoDash
 
-# TODO
 screenshots:
-- url: url of a screenshot, /assets/img/...
-  alt: alt-text of a screenshot
-  caption: caption of a screenshot
-- url: url of another screenshot, /assets/img/...
-  alt: alt-text of another screenshot
-  caption: caption of another screenshot
-- ...
+- url: /assets/img/plugins/octodashcompanion/screenshot_settings.png
+  alt: OctoDash Companion
+  caption: OctoDash Companion Settings
 
-# TODO
-featuredimage: url of a featured image for your plugin, /assets/img/...
-
-# TODO
-# You only need the following if your plugin requires specific OctoPrint versions or
-# specific operating systems to function - you can safely remove the whole
-# "compatibility" block if this is not the case.
+featuredimage: /assets/img/plugins/octodashcompanion/screenshot_settings.png
 
 compatibility:
-
-  # List of compatible versions
-  #
-  # A single version number will be interpretated as a minimum version requirement,
-  # e.g. "1.3.1" will show the plugin as compatible to OctoPrint versions 1.3.1 and up.
-  # More sophisticated version requirements can be modelled too by using PEP440
-  # compatible version specifiers.
-  #
-  # You can also remove the whole "octoprint" block. Removing it will default to all
-  # OctoPrint versions being supported.
-
   octoprint:
-  - 1.2.0
-
-  # List of compatible operating systems
-  #
-  # Valid values:
-  #
-  # - windows
-  # - linux
-  # - macos
-  # - freebsd
-  #
-  # There are also two OS groups defined that get expanded on usage:
-  #
-  # - posix: linux, macos and freebsd
-  # - nix: linux and freebsd
-  #
-  # You can also remove the whole "os" block. Removing it will default to all
-  # operating systems being supported.
-
+  - 1.4.0
   os:
   - linux
   - windows
   - macos
   - freebsd
-
-  # Compatible Python version
-  #
-  # Plugins should aim for compatibility for Python 2 and 3 for now, in which case the value should be ">=2.7,<4".
-  #
-  # Plugins that only wish to support Python 3 should set it to ">=3,<4".
-  #
-  # If your plugin only supports Python 2 (worst case, not recommended for newly developed plugins since Python 2
-  # is EOL), leave at ">=2.7,<3" - be aware that your plugin will not be allowed to register on the
-  # plugin repository if it only support Python 2.
-
-  python: ">=2.7,<3"
+  python: ">=3.3,<4"
 
 ---
 
-**TODO**: Longer description of your plugin, configuration examples etc. This part will be visible on the page at
-http://plugins.octoprint.org/plugin/octodashcompanion/
+# OctoDash Companion
+
+This plugin allows for configuring OctoDash settings and upload custom theme files from within the OctoPrint interface. It assumes that you have both OctoDash and OctoPrint running on the same physical machine.
+
+## Configuration
+
+![settings](/assets/img/plugins/octodashcompanion/screenshot_settings.png)
+
+Once installed you can use the OctoDash Companion settings to configure the Printer Name and [Custom Actions](https://github.com/UnchartedBull/OctoDash/wiki/Custom-Actions). Other settings will be added as deemed necessary.
+
+To upload a new [Custom Theme](https://github.com/UnchartedBull/OctoDash/wiki/Custom-Styles) file, just upload the `custom-styles.css` file to OctoPrint as if it were a gcode file.
+
+## Get Help
+
+If you experience issues with this plugin or need assistance please use the issue tracker at the plugin's Homepage linked on the right.
+
+### Additional Plugins
+
+Check out my other plugins [here](https://plugins.octoprint.org/by_author/#jneilliii)
+
+### Support My Efforts
+I, jneilliii, programmed this plugin for fun and do my best effort to support those that have issues with it, please return the favor and leave me a tip or become a Patron if you find this plugin helpful and want me to continue future development.
+
+[![Patreon](/assets/img/plugins/active_filters_extended/patreon-with-text-new.png)](https://www.patreon.com/jneilliii) [![paypal](/assets/img/plugins/active_filters_extended/paypal-with-text.png)](https://paypal.me/jneilliii)
+
+<small>No paypal.me? Send funds via PayPal to jneilliii&#64;gmail&#46;com</small>
