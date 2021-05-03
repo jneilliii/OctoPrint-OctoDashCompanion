@@ -1,6 +1,6 @@
 # OctoDash Companion
 
-**TODO:** Describe what your plugin does.
+This plugin allows for configuring OctoDash settings and upload custom theme files from within the OctoPrint interface. It assumes that you have both OctoDash and OctoPrint running on the same physical machine.
 
 ## Setup
 
@@ -9,9 +9,10 @@ or manually using this URL:
 
     https://github.com/jneilliii/OctoPrint-OctoDashCompanion/archive/master.zip
 
-**TODO:** Describe how to install your plugin, if more needs to be done than just installing it via pip or through
-the plugin manager.
-
 ## Configuration
 
-**TODO:** Describe your plugin's configuration options (if any).
+![settings](screenshot_settings.png)
+
+Once installed you can use the OctoDash Companion settings to configure the Printer Name and [Custom Actions](https://github.com/UnchartedBull/OctoDash/wiki/Custom-Actions). Other settings will be added as deemed necessary.
+
+To upload a new [Custom Theme](https://github.com/UnchartedBull/OctoDash/wiki/Custom-Styles) file, just upload the `custom-styles.css` file to OctoPrint as if it were a gcode file.
