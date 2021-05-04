@@ -88,6 +88,9 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 		return make_response(render_template("webcam.jinja2", **render_kwargs))
 
+	def is_blueprint_protected(self):
+		return False
+
 	# ~~ AssetPlugin mixin
 
 	def get_assets(self):
