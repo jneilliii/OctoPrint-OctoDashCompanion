@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Webcam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .imgbox {
+            display: grid;
+            width: 100vw;
+            height: 100vh;
+        }
+        .center-fit {
+            max-width: 100%;
+            max-height: auto;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="imgbox">
+        <img class="center-fit" src="{{ webcam_url }}">
+    </div>
+</body>
+</html>
