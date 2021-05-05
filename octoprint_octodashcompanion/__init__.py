@@ -85,7 +85,12 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		render_kwargs = {
 			"webcam_url": webcam_url
 		}
-
+		if self._settings.global_get_boolean(["webcam", "flipH"]):
+			render_kwargs["webcam_flip_horizontal"] = "flipH"
+		if self._settings.global_get_boolean(["webcam", "flipV"]):
+			render_kwargs["webcam_flip_vertical"] = "flipV"
+		if self._settings.global_get_boolean(["webcam", "rotate90"]):
+			render_kwargs["webcam_rotate_ccw"] = "rotate90"
 		return make_response(render_template("webcam.jinja2", **render_kwargs))
 
 	def is_blueprint_protected(self):

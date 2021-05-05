@@ -17,11 +17,33 @@
             max-height: auto;
             margin: auto;
         }
+        .flipH.flipV {
+            -webkit-transform: scaleX(-1) scaleY(-1);
+            -moz-transform: scaleX(-1) scaleY(-1);
+            -ms-transform: scaleX(-1) scaleY(-1);
+            transform: scaleX(-1) scaleY(-1);
+        }
+        .flipV {
+            -webkit-transform: scaleY(-1);
+            -moz-transform: scaleY(-1);
+            -ms-transform: scaleY(-1);
+            transform: scaleY(-1);
+        }
+        .flipH {
+            -webkit-transform: scaleX(-1);
+            -moz-transform: scaleX(-1);
+            -ms-transform: scaleX(-1);
+            transform: scaleX(-1);
+        }
+
+        .rotate90 {
+            transform: rotate(-90deg);
+        }
     </style>
 </head>
 <body>
-    <div class="imgbox">
-        <img class="center-fit" src="{{ webcam_url }}">
+    <div class="imgbox {{ webcam_rotate_ccw }}">
+        <img class="center-fit {{ webcam_flip_horizontal }} {{ webcam_flip_vertical }}" src="{{ webcam_url }}">
     </div>
 </body>
 </html>
