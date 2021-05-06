@@ -1,6 +1,8 @@
 # coding=utf-8
 from __future__ import absolute_import
 
+from flask import make_response, render_template
+
 import octoprint.plugin
 import octoprint.filemanager.util
 from octoprint.filemanager import FileDestinations
@@ -16,7 +18,8 @@ import json
 class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 							  octoprint.plugin.AssetPlugin,
 							  octoprint.plugin.TemplatePlugin,
-							  octoprint.plugin.EventHandlerPlugin):
+							  octoprint.plugin.EventHandlerPlugin,
+							  octoprint.plugin.BlueprintPlugin):
 
 	def __init__(self):
 		self.config_file = normalize("{}/config.json".format(_default_configdir("octodash")))
@@ -72,6 +75,28 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 				shutil.copyfile(source_file, destination_file)
 				self._logger.info("attempting removal of {}".format(source_file))
 				self._file_manager.remove_file(FileDestinations.LOCAL, payload["path"])
+
+	# ~~ BluePrint routes
+	@octoprint.plugin.BlueprintPlugin.route("webcam")
+	def webcam_route(self):
+		webcam_url = self._settings.global_get(["webcam", "stream"])
+
+		# Anything passed here can be used as {{ variable_name }} in the template
+		render_kwargs = {
+			"webcam_url": webcam_url
+		}
+		if self._settings.global_get_boolean(["webcam", "flipH"]):
+			render_kwargs["webcam_flip_horizontal"] = "flipH"
+		if self._settings.global_get_boolean(["webcam", "flipV"]):
+			render_kwargs["webcam_flip_vertical"] = "flipV"
+		if self._settings.global_get_boolean(["webcam", "rotate90"]):
+			render_kwargs["webcam_rotate_ccw"] = "rotate90"
+		response = make_response(render_template("webcam.jinja2", **render_kwargs))
+		response.headers["X-Frame-Options"] = ""
+		return response
+
+	def is_blueprint_protected(self):
+		return False
 
 	# ~~ AssetPlugin mixin
 

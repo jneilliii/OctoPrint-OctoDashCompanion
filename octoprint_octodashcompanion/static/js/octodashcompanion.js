@@ -22,6 +22,14 @@ $(function() {
             self.settingsViewModel.settings.plugins.octodashcompanion.config.octodash.customActions.push(self.selected_command());
         };
 
+        self.add_custom_action_token = function(data, event) {
+            if(event.currentTarget.text === '[!WEBCAM]') {
+                data.command('[!WEB]http://localhost/plugin/octodashcompanion/webcam');
+            } else {
+                data.command(event.currentTarget.text);
+            }
+        };
+
         self.remove_custom_action = function(data) {
             self.selected_command(null);
             self.settingsViewModel.settings.plugins.octodashcompanion.config.octodash.customActions.remove(data);
