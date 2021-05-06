@@ -21,6 +21,16 @@
     font-size: 12px;
 }
 
+#settings_plugin_octodashcompanion_form .input-append .add-on:last-child, .input-append .btn:last-child, .input-append .btn-group:last-child>.dropdown-toggle {
+    -webkit-border-radius: 0 4px 4px 0;
+    -moz-border-radius: 0 4px 4px 0;
+    border-radius: 0 4px 4px 0;
+}
+
+#settings_plugin_octodashcompanion_form .input-append .input-block-level {
+    width: 95%;
+}
+
 .themeify.discorded #settings_plugin_octodashcompanion div.well {
     background-color: #2f3136;
     border-color: #2f3136;

@@ -37,7 +37,26 @@
                         <div class="control-group">
                             <label class="control-label">{{ _('Command') }}</label>
                             <div class="controls">
-                                <input type="text" class="input-block-level" data-bind="value: command"/>
+                                <div class="input-append">
+                                    <input type="text" class="input-block-level" data-bind="value: command" placeholder="Enter GCODE command or select predefined custom action." title="Enter GCODE command or select predefined custom action on right." />
+                                    <div class="btn-group dropup">
+                                        <button class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+                                        <ul class="dropdown-menu pull-right">
+                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!STOPDASHBOARD]</a></li>
+                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!DISCONNECT]</a></li>
+                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!RELOAD]</a></li>
+                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!SHUTDOWN]</a></li>
+                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!REBOOT]</a></li>
+                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!KILL]</a></li>
+                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!POWEROFF]</a></li>
+                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!POWERON]</a></li>
+                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!POWERTOGGLE]</a></li>
+                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!WEB]http://</a></li>
+                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!WEBCAM]</a></li>
+                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!NEOPIXEL]identifier,red,green,blue</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="control-group">
