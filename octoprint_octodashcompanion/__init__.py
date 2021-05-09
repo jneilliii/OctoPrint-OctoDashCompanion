@@ -75,6 +75,13 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 				shutil.copyfile(source_file, destination_file)
 				self._logger.info("attempting removal of {}".format(source_file))
 				self._file_manager.remove_file(FileDestinations.LOCAL, payload["path"])
+			if payload["target"] == "local" and payload["path"] == "config.json":
+				source_file = self._file_manager.sanitize_path(FileDestinations.LOCAL, payload["path"])
+				destination_file = normalize("{}/config.json".format(self._settings.get(["config_directory"])))
+				self._logger.info("attempting copy of {} to {}".format(source_file, destination_file))
+				shutil.copyfile(source_file, destination_file)
+				self._logger.info("attempting removal of {}".format(source_file))
+				self._file_manager.remove_file(FileDestinations.LOCAL, payload["path"])
 
 	# ~~ BluePrint routes
 	@octoprint.plugin.BlueprintPlugin.route("webcam")
@@ -119,7 +126,7 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 	def get_extension_tree(self, *args, **kwargs):
 		return dict(
 			machinecode=dict(
-				octodashcompanion=["css"]
+				octodashcompanion=["css", "json"]
 			)
 		)
 
