@@ -82,7 +82,7 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 				shutil.copyfile(source_file, destination_file)
 				self._logger.info("attempting removal of {}".format(source_file))
 				self._file_manager.remove_file(FileDestinations.LOCAL, payload["path"])
-				self._settings.save(trigger_event=True)
+				self._settings.save(force=True, trigger_event=True)
 
 	# ~~ BluePrint routes
 	@octoprint.plugin.BlueprintPlugin.route("webcam")
