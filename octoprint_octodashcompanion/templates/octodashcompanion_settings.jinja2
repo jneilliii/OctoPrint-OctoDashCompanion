@@ -11,7 +11,7 @@
                 <div class="row-fluid">
                     <div class="well">Upload your custom theme's <span class="label">custom-styles.css</span> file via OctoPrint's interface like it was a gcode file. Once uploaded you will have to restart OctoDash for the changes to take effect. The below settings are assuming OctoDash's config.json file is located at <span class="label" data-bind="text: settingsViewModel.settings.plugins.octodashcompanion.config_directory"> </span> and running on the same machine as this OctoPrint instance.</div>
                     <div class="control-group">
-                        <label class="control-label">{{ _('OctoPrint URL') }}</label>
+                        <label class="control-label">{{ _('OctoPrint Base API URL') }}</label>
                         <div class="controls">
                             <input type="text" class="input-block-level" data-bind="value: settingsViewModel.settings.plugins.octodashcompanion.config.octoprint.url">
                         </div>
@@ -145,6 +145,7 @@
                         <label class="checkbox">{{ _('PSU Control') }}<input type="checkbox" data-bind="checked: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.psuControl.enabled" /></label>
                     </div>
                 </div>
+                <!-- ko if: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.tpLinkSmartPlug -->
                 <div class="control-group">
                     <div class="controls">
                         <label class="checkbox">{{ _('TPLinkSmartplug') }}<input type="checkbox" data-bind="checked: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.tpLinkSmartPlug.enabled" /></label>
@@ -156,6 +157,8 @@
                         <input type="text" data-bind="value: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.tpLinkSmartPlug.smartPlugIP" />
                     </div>
                 </div>
+                <!-- /ko -->
+                <!-- ko if: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.tasmota -->
                 <div class="control-group">
                     <div class="controls">
                         <label class="checkbox">{{ _('Tasmota') }}<input type="checkbox" data-bind="checked: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.tasmota.enabled" /></label>
@@ -173,6 +176,8 @@
                         <input type="text" data-bind="value: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.tasmota.index" />
                     </div>
                 </div>
+                <!-- /ko -->
+                <!-- ko if: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.tasmotaMqtt -->
                 <div class="control-group">
                     <div class="controls">
                         <label class="checkbox">{{ _('Tasmota MQTT') }}<input type="checkbox" data-bind="checked: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.tasmotaMqtt.enabled" /></label>
@@ -190,6 +195,7 @@
                         <input type="text" data-bind="value: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.tasmotaMqtt.relayNumber" />
                     </div>
                 </div>
+                <!-- /ko -->
             </div>
         </div>
     </form>
