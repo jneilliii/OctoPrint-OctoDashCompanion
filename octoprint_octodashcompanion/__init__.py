@@ -13,6 +13,7 @@ import os
 import sys
 import shutil
 import json
+import re
 
 
 class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
@@ -23,6 +24,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 	def __init__(self):
 		self.config_file = normalize("{}/config.json".format(_default_configdir("octodash")))
+		self.use_received_fan_speeds = False
+		self.fan_regex = re.compile("M106 (?:P([0-9]) )?S([0-9]+)")
 
 	# ~~ SettingsPlugin mixin
 
@@ -122,6 +125,30 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 	def get_template_vars(self):
 		return {"plugin_version": self._plugin_version}
 
+	# ~~ GCode Received hook
+
+	def process_received_gcode(self, comm, line, *args, **kwargs):
+		if "M106" not in line:
+			return line
+
+		self.send_fan_speed(line, "received")
+		return line
+
+	# ~~ GCode Sent hook
+
+	def process_sent_gcode(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
+		if gcode and gcode == "M106" and self.use_received_fan_speeds is False:
+			self.send_fan_speed(cmd, "sent")
+
+	def send_fan_speed(self, gcode, direction):
+		fan_match = self.fan_regex.match(gcode)
+		if fan_match:
+			if direction == "received":
+				self.use_received_fan_speeds = True
+			fan, fan_set_speed = fan_match.groups()
+			self._plugin_manager.send_plugin_message("octodash",
+													 {"fanspeed": (int("{}".format(fan_set_speed))/255 * 100)})
+
 	# ~~ extension_tree hook
 
 	def get_extension_tree(self, *args, **kwargs):
@@ -194,6 +221,8 @@ def __plugin_load__():
 
 	global __plugin_hooks__
 	__plugin_hooks__ = {
+		"octoprint.comm.protocol.gcode.received": __plugin_implementation__.process_received_gcode,
+		"octoprint.comm.protocol.gcode.sent": __plugin_implementation__.process_sent_gcode,
 		"octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
 		"octoprint.filemanager.extension_tree": __plugin_implementation__.get_extension_tree,
 	}
