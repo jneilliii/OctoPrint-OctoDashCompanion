@@ -7,8 +7,20 @@
             margin: 0;
             padding: 0;
         }
+        .selector {
+            float: left;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+        }
         .imgbox {
-            display: grid;
+            float: left;
+            position: absolute;
+            left: 0;
+            top: 0;
             width: 100vw;
             height: 100vh;
         }
@@ -39,11 +51,54 @@
         .rotate90 {
             transform: rotate(-90deg);
         }
+
+        .webcam_link, .webcam_link:visited, .webcam_link:hover, span.separator {
+            text-decoration: none;
+            color: #ffffff;
+            padding: 5px;
+        }
+
+        .selector .separator:last-child {
+            display: none;
+        }
+
     </style>
+    <script language="JavaScript">
+        const True = true;
+        const False = false;
+        function switchcam(data) {
+            let webcam_image = document.getElementById("webcam_image");
+            if(data.URL !== webcam_image.src) {
+                webcam_image.src = data.URL;
+            }
+            if(data.flipH === true){
+                webcam_image.classList.add("flipH")
+            } else {
+                webcam_image.classList.remove("flipH")
+            }
+            if(data.flipV === true){
+                webcam_image.classList.add("flipV")
+            } else {
+                webcam_image.classList.remove("flipV")
+            }
+            if(data.rotate90 === true){
+                webcam_image.classList.add("rotate90")
+            } else {
+                webcam_image.classList.remove("rotate90")
+            }
+        }
+    </script>
 </head>
 <body>
+    {% if webcams %}
+    <div class="selector">
+        {% for webcam in webcams %}
+            <a href="javascript: switchcam({{ webcam }})" class="webcam_link">{{ webcam.name|e }}</a><span class="separator">|</span>
+        {% endfor %}
+    </div>
+    {% endif %}
     <div class="imgbox {{ webcam_rotate_ccw }}">
-        <img class="center-fit {{ webcam_flip_horizontal }} {{ webcam_flip_vertical }}" src="{{ webcam_url }}">
+        <img id="webcam_image" class="center-fit {{ webcam_flip_horizontal }} {{ webcam_flip_vertical }}" src="{{ webcam_url }}">
     </div>
 </body>
 </html>

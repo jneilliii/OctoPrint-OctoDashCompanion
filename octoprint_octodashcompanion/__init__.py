@@ -1,8 +1,6 @@
 # coding=utf-8
 from __future__ import absolute_import
 
-from flask import make_response, render_template
-
 import octoprint.plugin
 import octoprint.filemanager.util
 from octoprint.filemanager import FileDestinations
@@ -13,6 +11,7 @@ import os
 import sys
 import shutil
 import json
+import flask
 
 
 class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
@@ -99,7 +98,10 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 			render_kwargs["webcam_flip_vertical"] = "flipV"
 		if self._settings.global_get_boolean(["webcam", "rotate90"]):
 			render_kwargs["webcam_rotate_ccw"] = "rotate90"
-		response = make_response(render_template("webcam.jinja2", **render_kwargs))
+		if self._settings.global_get(["plugins", "multicam"]):
+			render_kwargs["webcams"] = self._settings.global_get(["plugins", "multicam", "multicam_profiles"])
+
+		response = flask.make_response(flask.render_template("webcam.jinja2", **render_kwargs))
 		response.headers["X-Frame-Options"] = ""
 		return response
 
