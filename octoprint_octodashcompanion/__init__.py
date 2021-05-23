@@ -7,6 +7,7 @@ from octoprint.filemanager import FileDestinations
 from octoprint.util.paths import normalize
 from octoprint.events import Events
 from octoprint.util import dict_merge
+from flask import make_response, render_template
 import os
 import sys
 import shutil
