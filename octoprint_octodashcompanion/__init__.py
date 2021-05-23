@@ -146,8 +146,9 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 			if direction == "received":
 				self.use_received_fan_speeds = True
 			fan, fan_set_speed = fan_match.groups()
-			self._plugin_manager.send_plugin_message("octodash",
-													 {"fanspeed": (int("{}".format(fan_set_speed))/255 * 100)})
+			if fan is None:
+				fan = 1
+			self._plugin_manager.send_plugin_message("octodash", {"fanspeed": {"{}".format(fan): (int("{}".format(fan_set_speed))/255 * 100)}})
 
 	# ~~ extension_tree hook
 
