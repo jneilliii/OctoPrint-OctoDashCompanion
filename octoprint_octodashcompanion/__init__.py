@@ -7,7 +7,7 @@ from octoprint.filemanager import FileDestinations
 from octoprint.util.paths import normalize
 from octoprint.events import Events
 from octoprint.util import dict_merge
-from flask import make_response, render_template
+import flask
 import os
 import sys
 import shutil
@@ -95,16 +95,27 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		render_kwargs = {
 			"webcam_url": webcam_url
 		}
-		if self._settings.global_get_boolean(["webcam", "flipH"]):
-			render_kwargs["webcam_flip_horizontal"] = "flipH"
-		if self._settings.global_get_boolean(["webcam", "flipV"]):
-			render_kwargs["webcam_flip_vertical"] = "flipV"
-		if self._settings.global_get_boolean(["webcam", "rotate90"]):
-			render_kwargs["webcam_rotate_ccw"] = "rotate90"
-		if self._settings.global_get(["plugins", "multicam"]):
-			render_kwargs["webcams"] = self._settings.global_get(["plugins", "multicam", "multicam_profiles"])
 
-		response = make_response(render_template("webcam.jinja2", **render_kwargs))
+		if self._settings.global_get(["plugins", "multicam"]) and "webcam" in flask.request.values:
+			webcam = self._settings.global_get(["plugins", "multicam", "multicam_profiles"])[int(flask.request.values["webcam"])-1]
+			render_kwargs["webcam_url"] = webcam["URL"]
+			if webcam["flipH"]:
+				render_kwargs["webcam_flip_horizontal"] = "flipH"
+			if webcam["flipV"]:
+				render_kwargs["webcam_flip_vertical"] = "flipV"
+			if webcam["rotate90"]:
+				render_kwargs["webcam_rotate_ccw"] = "rotate90"
+		else:
+			if self._settings.global_get_boolean(["webcam", "flipH"]):
+				render_kwargs["webcam_flip_horizontal"] = "flipH"
+			if self._settings.global_get_boolean(["webcam", "flipV"]):
+				render_kwargs["webcam_flip_vertical"] = "flipV"
+			if self._settings.global_get_boolean(["webcam", "rotate90"]):
+				render_kwargs["webcam_rotate_ccw"] = "rotate90"
+			if self._settings.global_get(["plugins", "multicam"]):
+				render_kwargs["webcams"] = self._settings.global_get(["plugins", "multicam", "multicam_profiles"])
+
+		response = flask.make_response(flask.render_template("webcam.jinja2", **render_kwargs))
 		response.headers["X-Frame-Options"] = ""
 		return response
 
