@@ -1,18 +1,18 @@
 # coding=utf-8
 from __future__ import absolute_import
 
-from flask import make_response, render_template
-
 import octoprint.plugin
 import octoprint.filemanager.util
 from octoprint.filemanager import FileDestinations
 from octoprint.util.paths import normalize
 from octoprint.events import Events
 from octoprint.util import dict_merge
+import flask
 import os
 import sys
 import shutil
 import json
+import re
 
 
 class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
@@ -23,6 +23,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 	def __init__(self):
 		self.config_file = normalize("{}/config.json".format(_default_configdir("octodash")))
+		self.use_received_fan_speeds = False
+		self.fan_regex = re.compile("M106 (?:P([0-9]) )?S([0-9]+)")
 
 	# ~~ SettingsPlugin mixin
 
@@ -93,13 +95,27 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		render_kwargs = {
 			"webcam_url": webcam_url
 		}
-		if self._settings.global_get_boolean(["webcam", "flipH"]):
-			render_kwargs["webcam_flip_horizontal"] = "flipH"
-		if self._settings.global_get_boolean(["webcam", "flipV"]):
-			render_kwargs["webcam_flip_vertical"] = "flipV"
-		if self._settings.global_get_boolean(["webcam", "rotate90"]):
-			render_kwargs["webcam_rotate_ccw"] = "rotate90"
-		response = make_response(render_template("webcam.jinja2", **render_kwargs))
+
+		if self._settings.global_get(["plugins", "multicam"]) and "webcam" in flask.request.values:
+			webcam = self._settings.global_get(["plugins", "multicam", "multicam_profiles"])[int(flask.request.values["webcam"])-1]
+			render_kwargs["webcam_url"] = webcam["URL"]
+			if webcam["flipH"]:
+				render_kwargs["webcam_flip_horizontal"] = "flipH"
+			if webcam["flipV"]:
+				render_kwargs["webcam_flip_vertical"] = "flipV"
+			if webcam["rotate90"]:
+				render_kwargs["webcam_rotate_ccw"] = "rotate90"
+		else:
+			if self._settings.global_get_boolean(["webcam", "flipH"]):
+				render_kwargs["webcam_flip_horizontal"] = "flipH"
+			if self._settings.global_get_boolean(["webcam", "flipV"]):
+				render_kwargs["webcam_flip_vertical"] = "flipV"
+			if self._settings.global_get_boolean(["webcam", "rotate90"]):
+				render_kwargs["webcam_rotate_ccw"] = "rotate90"
+			if self._settings.global_get(["plugins", "multicam"]):
+				render_kwargs["webcams"] = self._settings.global_get(["plugins", "multicam", "multicam_profiles"])
+
+		response = flask.make_response(flask.render_template("webcam.jinja2", **render_kwargs))
 		response.headers["X-Frame-Options"] = ""
 		return response
 
@@ -121,6 +137,31 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 	def get_template_vars(self):
 		return {"plugin_version": self._plugin_version}
+
+	# ~~ GCode Received hook
+
+	def process_received_gcode(self, comm, line, *args, **kwargs):
+		if "M106" not in line:
+			return line
+
+		self.send_fan_speed(line, "received")
+		return line
+
+	# ~~ GCode Sent hook
+
+	def process_sent_gcode(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
+		if gcode and gcode == "M106" and self.use_received_fan_speeds is False:
+			self.send_fan_speed(cmd, "sent")
+
+	def send_fan_speed(self, gcode, direction):
+		fan_match = self.fan_regex.match(gcode)
+		if fan_match:
+			if direction == "received":
+				self.use_received_fan_speeds = True
+			fan, fan_set_speed = fan_match.groups()
+			if fan is None:
+				fan = 1
+			self._plugin_manager.send_plugin_message("octodash", {"fanspeed": {"{}".format(fan): (int("{}".format(fan_set_speed))/255 * 100)}})
 
 	# ~~ extension_tree hook
 
@@ -194,6 +235,8 @@ def __plugin_load__():
 
 	global __plugin_hooks__
 	__plugin_hooks__ = {
+		"octoprint.comm.protocol.gcode.received": __plugin_implementation__.process_received_gcode,
+		"octoprint.comm.protocol.gcode.sent": __plugin_implementation__.process_sent_gcode,
 		"octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
 		"octoprint.filemanager.extension_tree": __plugin_implementation__.get_extension_tree,
 	}
