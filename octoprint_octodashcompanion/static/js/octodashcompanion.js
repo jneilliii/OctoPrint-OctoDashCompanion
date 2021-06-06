@@ -23,10 +23,23 @@ $(function() {
         };
 
         self.add_custom_action_token = function(data, event) {
-            if(event.currentTarget.text === '[!WEBCAM]') {
-                data.command('[!WEB]http://localhost/plugin/octodashcompanion/webcam');
-            } else {
-                data.command(event.currentTarget.text);
+            switch (event.currentTarget.text) {
+                case '[!WEBCAM]':
+                    data.command('[!WEB]'+self.settingsViewModel.settings.plugins.octodashcompanion.config.octoprint.url().replace('/api/','/')+'plugin/octodashcompanion/webcam');
+                    data.icon('camera');
+                    break;
+                case '[!RESTARTSERVICE]':
+                    data.command('[!WEB]'+self.settingsViewModel.settings.plugins.octodashcompanion.config.octoprint.url().replace('/api/','/')+'plugin/octodashcompanion/restart');
+                    data.icon('recycle');
+                    data.color('#FF0000');
+                    break;
+                case '[!SLEEP]':
+                    data.command('[!WEB]'+self.settingsViewModel.settings.plugins.octodashcompanion.config.octoprint.url().replace('/api/','/')+'plugin/octodashcompanion/sleep');
+                    data.icon('bed');
+                    data.color('#0097e6');
+                    break;
+                default:
+                    data.command(event.currentTarget.text);
             }
         };
 

@@ -119,6 +119,26 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		response.headers["X-Frame-Options"] = ""
 		return response
 
+	@octoprint.plugin.BlueprintPlugin.route("restart")
+	def restart_route(self):
+		self._logger.debug("Restart OctoDash request received")
+		try:
+			os.open("sudo service getty@tty1 restart")
+		except Exception as e:
+			self._logger.debug("There was an error attempting to restart OctoDash: {}".format(e))
+			return flask.jsonify({"restart": False})
+		return flask.jsonify({"restart": True})
+
+	@octoprint.plugin.BlueprintPlugin.route("sleep")
+	def sleep_route(self):
+		self._logger.debug("Sleep OctoDash request received")
+		try:
+			os.open(self._settings.get(["config", "octodash", "screenSleepCommand"]))
+		except Exception as e:
+			self._logger.debug("There was an error attempting to sleep OctoDash: {}".format(e))
+			return flask.jsonify({"sleep": False})
+		return flask.jsonify({"sleep": True})
+
 	def is_blueprint_protected(self):
 		return False
 
