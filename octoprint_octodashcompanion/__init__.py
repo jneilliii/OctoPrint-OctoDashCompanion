@@ -137,7 +137,7 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		import subprocess
 		import shlex
 		try:
-			subprocess.run("xset -display :0.0 dpms force standby".split())
+			subprocess.run(self.on_settings_load()["config"]["octodash"]["screenSleepCommand"].split())
 		except subprocess.CalledProcessError as e:
 			self._logger.debug("Sleep error: {}".format(e))
 			return flask.jsonify({"sleep": False})
