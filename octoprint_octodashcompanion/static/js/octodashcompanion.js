@@ -33,6 +33,7 @@ $(function() {
                     data.command('[!WEB]'+self.settingsViewModel.settings.plugins.octodashcompanion.config.octoprint.url().replace('/api/','/')+'plugin/octodashcompanion/restart');
                     data.icon('recycle');
                     data.color('#FF0000');
+                    data.confirm(true);
                     data.exit(false);
                     break;
                 case '[!SLEEP]':

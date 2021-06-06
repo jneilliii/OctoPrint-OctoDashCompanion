@@ -131,11 +131,11 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 	@octoprint.plugin.BlueprintPlugin.route("sleep")
 	def sleep_route(self):
-		self._logger.debug("Sleep OctoDash request received")
+		self._logger.debug("Sleep: \"DISPLAY=\":0\" {}\"".format(self._settings.get(["config", "octodash", "screenSleepCommand"])))
 		try:
-			os.system(self._settings.get(["config", "octodash", "screenSleepCommand"]))
+			os.system("DISPLAY=\":0\" {}".format(self._settings.get(["config", "octodash", "screenSleepCommand"])))
 		except Exception as e:
-			self._logger.debug("There was an error attempting to sleep OctoDash: {}".format(e))
+			self._logger.debug("Sleep error: {}".format(e))
 			return flask.jsonify({"sleep": False})
 		return flask.jsonify({"sleep": True})
 
