@@ -136,14 +136,17 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		import subprocess
 		try:
 			sleep_command = self.on_settings_load()["config"]["octodash"]["screenSleepCommand"].split()
-			if "-display" not in sleep_command:
+			if "xset" in sleep_command and "-display" not in sleep_command:
 				sleep_command.extend(["-display", ":0.0"])
 			self._logger.debug("Sleep: {}".format(sleep_command))
 			subprocess.run(sleep_command)
+			render_kwargs = {"sleep": True}
 		except subprocess.CalledProcessError as e:
 			self._logger.debug("Sleep error: {}".format(e))
-			return flask.jsonify({"sleep": False})
-		return flask.jsonify({"sleep": True})
+			render_kwargs = {"sleep": False, "error": "{}".format(e)}
+		response = flask.make_response(flask.render_template("sleep.jinja2", **render_kwargs))
+		response.headers["X-Frame-Options"] = ""
+		return response
 
 	def is_blueprint_protected(self):
 		return False

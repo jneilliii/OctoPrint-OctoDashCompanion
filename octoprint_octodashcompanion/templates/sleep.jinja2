@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Sleep</title>
+</head>
+<body>
+    <div class="sleep">
+        Sleep command was successful? {{ sleep }}
+    </div>
+    {% if error %}
+    <div class="error">
+        Error: {{ error }}
+    </div>
+    {% endif %}
+</body>
