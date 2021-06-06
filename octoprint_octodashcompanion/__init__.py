@@ -136,9 +136,9 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		import subprocess
 		try:
 			sleep_command = self.on_settings_load()["config"]["octodash"]["screenSleepCommand"].split()
-			self._logger.debug("Sleep: {}".format(sleep_command))
 			if "-display" not in sleep_command:
-				sleep_command.append(["-display", ":0.0"])
+				sleep_command.extend(["-display", ":0.0"])
+			self._logger.debug("Sleep: {}".format(sleep_command))
 			subprocess.run(sleep_command)
 		except subprocess.CalledProcessError as e:
 			self._logger.debug("Sleep error: {}".format(e))
