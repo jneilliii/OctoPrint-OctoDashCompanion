@@ -133,11 +133,13 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 	@octoprint.plugin.BlueprintPlugin.route("sleep")
 	def sleep_route(self):
-		self._logger.debug("Sleep: \"DISPLAY=\":0\" {}\"".format(self.on_settings_load()["config"]["octodash"]["screenSleepCommand"]))
 		import subprocess
-		import shlex
 		try:
-			subprocess.run(self.on_settings_load()["config"]["octodash"]["screenSleepCommand"].split())
+			sleep_command = self.on_settings_load()["config"]["octodash"]["screenSleepCommand"].split()
+			self._logger.debug("Sleep: {}".format(sleep_command))
+			if "-display" not in sleep_command:
+				sleep_command.append(["-display", ":0.0"])
+			subprocess.run(sleep_command)
 		except subprocess.CalledProcessError as e:
 			self._logger.debug("Sleep error: {}".format(e))
 			return flask.jsonify({"sleep": False})
