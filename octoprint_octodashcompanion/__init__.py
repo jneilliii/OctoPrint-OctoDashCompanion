@@ -122,19 +122,23 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 	@octoprint.plugin.BlueprintPlugin.route("restart")
 	def restart_route(self):
 		self._logger.debug("Restart OctoDash request received")
+		import subprocess
+		import shlex
 		try:
-			os.system("sudo service getty@tty1 restart")
-		except Exception as e:
+			subprocess.run(shlex.split("sudo service getty@tty1 restart"))
+		except subprocess.CalledProcessError as e:
 			self._logger.debug("There was an error attempting to restart OctoDash: {}".format(e))
 			return flask.jsonify({"restart": False})
 		return flask.jsonify({"restart": True})
 
 	@octoprint.plugin.BlueprintPlugin.route("sleep")
 	def sleep_route(self):
-		self._logger.debug("Sleep: \"DISPLAY=\":0\" {}\"".format(self._settings.get(["config", "octodash", "screenSleepCommand"])))
+		self._logger.debug("Sleep: \"DISPLAY=\":0\" {}\"".format(self.on_settings_load()["config"]["octodash"]["screenSleepCommand"]))
+		import subprocess
+		import shlex
 		try:
-			os.system("DISPLAY=\":0\" {}".format(self._settings.get(["config", "octodash", "screenSleepCommand"])))
-		except Exception as e:
+			subprocess.run(shlex.split("DISPLAY=\":0\" {}".format(self.on_settings_load()["config"]["octodash"]["screenSleepCommand"])))
+		except subprocess.CalledProcessError as e:
 			self._logger.debug("Sleep error: {}".format(e))
 			return flask.jsonify({"sleep": False})
 		return flask.jsonify({"sleep": True})
