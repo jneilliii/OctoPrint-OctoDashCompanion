@@ -141,7 +141,7 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 			self._logger.debug("Sleep: {}".format(sleep_command))
 			subprocess.run(sleep_command)
 			render_kwargs = {"sleep": True}
-		except subprocess.CalledProcessError as e:
+		except Exception as e:
 			self._logger.debug("Sleep error: {}".format(e))
 			render_kwargs = {"sleep": False, "error": "{}".format(e)}
 		response = flask.make_response(flask.render_template("sleep.jinja2", **render_kwargs))
