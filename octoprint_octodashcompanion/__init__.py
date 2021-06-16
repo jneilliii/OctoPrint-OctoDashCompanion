@@ -25,6 +25,7 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		self.config_file = normalize("{}/config.json".format(_default_configdir("octodash")))
 		self.use_received_fan_speeds = False
 		self.fan_regex = re.compile("M106 (?:P([0-9]) )?S([0-9]+)")
+		self.forced_types = {"plugins": {"tasmota": {"index": "int"}}}
 
 	# ~~ SettingsPlugin mixin
 
@@ -61,10 +62,23 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 		# save changes to config.json in config_directory
 		if data.get("config"):
-			self._logger.info("merging settings to {}: {}".format(self.config_file, {"config": data.get("config")}))
+			# type conversions from OP settings, only seems to effect integers.
+			new_config_settings = data.get("config")
+			for item in new_config_settings:
+				if item in self.forced_types:
+					sub_items = new_config_settings[item]
+					for sub_items_items in sub_items:
+						if sub_items_items in self.forced_types[item]:
+							for key in sub_items[sub_items_items]:
+								if key in self.forced_types[item][sub_items_items]:
+									if self.forced_types[item][sub_items_items][key] == "int":
+										sub_items[sub_items_items][key] = int(sub_items[sub_items_items][key])
+									if self.forced_types[item][sub_items_items][key] == "bool":
+										sub_items[sub_items_items][key] = bool(sub_items[sub_items_items][key])
+			self._logger.info("merging settings to {}: {}".format(self.config_file, {"config": new_config_settings}))
 			with open(self.config_file, "r") as old_settings_file:
 				config_file_json = json.load(old_settings_file)
-				config_to_save = dict_merge(config_file_json, {"config": data.get("config")})
+				config_to_save = dict_merge(config_file_json, {"config": new_config_settings})
 			with open(self.config_file, "w") as new_settings_file:
 				json.dump(config_to_save, new_settings_file, indent="\t")
 
