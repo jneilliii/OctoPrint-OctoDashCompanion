@@ -25,7 +25,7 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		self.config_file = normalize("{}/config.json".format(_default_configdir("octodash")))
 		self.use_received_fan_speeds = False
 		self.fan_regex = re.compile("M106 (?:P([0-9]) )?S([0-9]+)")
-		self.forced_types = {"plugins": {"tasmota": {"index": "int"}}}
+		self.forced_types = {"plugins": {"tasmota": {"index": "int"}, "tasmotaMqtt": {"relayNumber": "int"}, "enclosure": {"ambientSensorID": "int", "filament1SensorID": "int", "filament2SensorID": "int"}}}
 
 	# ~~ SettingsPlugin mixin
 
@@ -111,7 +111,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		}
 
 		if self._settings.global_get(["plugins", "multicam"]) and "webcam" in flask.request.values:
-			webcam = self._settings.global_get(["plugins", "multicam", "multicam_profiles"])[int(flask.request.values["webcam"])-1]
+			webcam = self._settings.global_get(["plugins", "multicam", "multicam_profiles"])[
+				int(flask.request.values["webcam"]) - 1]
 			render_kwargs["webcam_url"] = webcam["URL"]
 			if webcam["flipH"]:
 				render_kwargs["webcam_flip_horizontal"] = "flipH"
@@ -204,7 +205,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 			fan, fan_set_speed = fan_match.groups()
 			if fan is None:
 				fan = 1
-			self._plugin_manager.send_plugin_message("octodash", {"fanspeed": {"{}".format(fan): (int("{}".format(fan_set_speed))/255 * 100)}})
+			self._plugin_manager.send_plugin_message("octodash", {
+				"fanspeed": {"{}".format(fan): (int("{}".format(fan_set_speed)) / 255 * 100)}})
 
 	# ~~ extension_tree hook
 
