@@ -170,7 +170,7 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 	def get_assets(self):
 		return dict(
-			js=["js/fontawesome-iconpicker.min.js", "js/ko.iconpicker.js", "js/octodashcompanion.js"],
+			js=["js/jquery-ui.min.js", "js/knockout-sortable.1.2.0.js", "js/fontawesome-iconpicker.min.js", "js/ko.iconpicker.js", "js/octodashcompanion.js"],
 			css=["css/fontawesome-iconpicker.min.css", "css/octodashcompanion.css"]
 		)
 

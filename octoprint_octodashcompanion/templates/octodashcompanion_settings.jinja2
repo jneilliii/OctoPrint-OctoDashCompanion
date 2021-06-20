@@ -29,7 +29,7 @@
                     <div class="control-group">
                         <label class="control-label">{{ _('Custom Actions') }} <button class="btn btn-mini btn-primary" data-bind="click: $root.add_custom_action" title="Use this to add a new custom action below."><i class="fas fa-plus" aria-hidden="true"></i> Add</button></label>
                         <div class="controls">
-                            <div class="span3" data-bind="foreach: settingsViewModel.settings.plugins.octodashcompanion.config.octodash.customActions">
+                            <div class="span3" data-bind="sortable: { data: settingsViewModel.settings.plugins.octodashcompanion.config.octodash.customActions, options: { cancel: '.unsortable'}}">
                                 <button class="btn btn-large span6" data-bind="click: $root.selected_command, style: {'border-color': color()}, css: {'active': ($root.selected_command() == $rawData), 'disabled': ($root.selected_command() !== $rawData)}">
                                     <i class="fa fa-2x" data-bind="class: (icon().indexOf('fa-') == -1) ? 'fa-' + icon() : icon(), style: {'color': color()}"  aria-hidden="true"></i>
                                 </button>
