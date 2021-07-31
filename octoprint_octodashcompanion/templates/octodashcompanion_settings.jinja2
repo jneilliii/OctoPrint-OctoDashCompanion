@@ -29,7 +29,7 @@
                     <div class="control-group">
                         <label class="control-label">{{ _('Custom Actions') }} <button class="btn btn-mini btn-primary" data-bind="click: $root.add_custom_action" title="Use this to add a new custom action below."><i class="fas fa-plus" aria-hidden="true"></i> Add</button></label>
                         <div class="controls">
-                            <div class="span3" data-bind="foreach: settingsViewModel.settings.plugins.octodashcompanion.config.octodash.customActions">
+                            <div class="span3" data-bind="sortable: { data: settingsViewModel.settings.plugins.octodashcompanion.config.octodash.customActions, options: { cancel: '.unsortable'}}">
                                 <button class="btn btn-large span6" data-bind="click: $root.selected_command, style: {'border-color': color()}, css: {'active': ($root.selected_command() == $rawData), 'disabled': ($root.selected_command() !== $rawData)}">
                                     <i class="fa fa-2x" data-bind="class: (icon().indexOf('fa-') == -1) ? 'fa-' + icon() : icon(), style: {'color': color()}"  aria-hidden="true"></i>
                                 </button>
@@ -48,17 +48,11 @@
                                             </div>
                                         </div>
                                         <div class="control-group">
-                                            <label class="control-label">{{ _('Color') }}</label>
-                                            <div class="controls">
-                                                <input type="color" class="input-block" data-bind="value: color"/>
-                                            </div>
-                                        </div>
-                                        <div class="control-group">
                                             <label class="control-label">{{ _('Command') }}</label>
                                             <div class="controls">
                                                 <div class="input-append">
                                                     <input type="text" class="input-block-level" data-bind="value: command" placeholder="Enter GCODE command or select predefined custom action." title="Enter GCODE command or select predefined custom action on right." />
-                                                    <div class="btn-group dropup">
+                                                    <div class="btn-group dropdown">
                                                         <button class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
                                                         <ul class="dropdown-menu pull-right">
                                                             <li><a href="#" data-bind="click: $root.add_custom_action_token">[!STOPDASHBOARD]</a></li>
@@ -72,10 +66,18 @@
                                                             <li><a href="#" data-bind="click: $root.add_custom_action_token">[!POWERTOGGLE]</a></li>
                                                             <li><a href="#" data-bind="click: $root.add_custom_action_token">[!WEB]http://</a></li>
                                                             <li><a href="#" data-bind="click: $root.add_custom_action_token">[!WEBCAM]</a></li>
+                                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!RESTARTSERVICE]</a></li>
+                                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!SLEEP]</a></li>
                                                             <li><a href="#" data-bind="click: $root.add_custom_action_token">[!NEOPIXEL]identifier,red,green,blue</a></li>
                                                         </ul>
                                                     </div>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label">{{ _('Color') }}</label>
+                                            <div class="controls">
+                                                <input type="color" class="input-block" data-bind="value: color"/>
                                             </div>
                                         </div>
                                         <div class="control-group">
@@ -173,7 +175,7 @@
                 <div class="control-group" data-bind="visible: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.tasmota.enabled()">
                     <label>{{ _('Index') }}</label>
                     <div class="controls">
-                        <input type="text" data-bind="value: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.tasmota.index" />
+                        <input type="number" data-bind="value: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.tasmota.index" />
                     </div>
                 </div>
                 <!-- /ko -->

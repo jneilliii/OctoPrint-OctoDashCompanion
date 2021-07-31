@@ -25,6 +25,7 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		self.config_file = normalize("{}/config.json".format(_default_configdir("octodash")))
 		self.use_received_fan_speeds = False
 		self.fan_regex = re.compile("M106 (?:P([0-9]) )?S([0-9]+)")
+		self.forced_types = {"plugins": {"tasmota": {"index": "int"}, "tasmotaMqtt": {"relayNumber": "int"}, "enclosure": {"ambientSensorID": "int", "filament1SensorID": "int", "filament2SensorID": "int"}}}
 
 	# ~~ SettingsPlugin mixin
 
@@ -61,10 +62,23 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 		# save changes to config.json in config_directory
 		if data.get("config"):
-			self._logger.info("merging settings to {}: {}".format(self.config_file, {"config": data.get("config")}))
+			# type conversions from OP settings, only seems to effect integers.
+			new_config_settings = data.get("config")
+			for item in new_config_settings:
+				if item in self.forced_types:
+					sub_items = new_config_settings[item]
+					for sub_items_items in sub_items:
+						if sub_items_items in self.forced_types[item]:
+							for key in sub_items[sub_items_items]:
+								if key in self.forced_types[item][sub_items_items]:
+									if self.forced_types[item][sub_items_items][key] == "int":
+										sub_items[sub_items_items][key] = int(sub_items[sub_items_items][key])
+									if self.forced_types[item][sub_items_items][key] == "bool":
+										sub_items[sub_items_items][key] = bool(sub_items[sub_items_items][key])
+			self._logger.info("merging settings to {}: {}".format(self.config_file, {"config": new_config_settings}))
 			with open(self.config_file, "r") as old_settings_file:
 				config_file_json = json.load(old_settings_file)
-				config_to_save = dict_merge(config_file_json, {"config": data.get("config")})
+				config_to_save = dict_merge(config_file_json, {"config": new_config_settings})
 			with open(self.config_file, "w") as new_settings_file:
 				json.dump(config_to_save, new_settings_file, indent="\t")
 
@@ -97,7 +111,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		}
 
 		if self._settings.global_get(["plugins", "multicam"]) and "webcam" in flask.request.values:
-			webcam = self._settings.global_get(["plugins", "multicam", "multicam_profiles"])[int(flask.request.values["webcam"])-1]
+			webcam = self._settings.global_get(["plugins", "multicam", "multicam_profiles"])[
+				int(flask.request.values["webcam"]) - 1]
 			render_kwargs["webcam_url"] = webcam["URL"]
 			if webcam["flipH"]:
 				render_kwargs["webcam_flip_horizontal"] = "flipH"
@@ -119,6 +134,35 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		response.headers["X-Frame-Options"] = ""
 		return response
 
+	@octoprint.plugin.BlueprintPlugin.route("restart")
+	def restart_route(self):
+		self._logger.debug("Restart OctoDash request received")
+		import subprocess
+		import shlex
+		try:
+			subprocess.run(shlex.split("sudo service getty@tty1 restart"))
+		except subprocess.CalledProcessError as e:
+			self._logger.debug("There was an error attempting to restart OctoDash: {}".format(e))
+			return flask.jsonify({"restart": False})
+		return flask.jsonify({"restart": True})
+
+	@octoprint.plugin.BlueprintPlugin.route("sleep")
+	def sleep_route(self):
+		import subprocess
+		try:
+			sleep_command = self.on_settings_load()["config"]["octodash"]["screenSleepCommand"].split()
+			if "xset" in sleep_command and "-display" not in sleep_command:
+				sleep_command.extend(["-display", ":0.0"])
+			self._logger.debug("Sleep: {}".format(sleep_command))
+			subprocess.run(sleep_command)
+			render_kwargs = {"sleep": True}
+		except Exception as e:
+			self._logger.debug("Sleep error: {}".format(e))
+			render_kwargs = {"sleep": False, "error": "{}".format(e)}
+		response = flask.make_response(flask.render_template("sleep.jinja2", **render_kwargs))
+		response.headers["X-Frame-Options"] = ""
+		return response
+
 	def is_blueprint_protected(self):
 		return False
 
@@ -126,7 +170,7 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 	def get_assets(self):
 		return dict(
-			js=["js/fontawesome-iconpicker.min.js", "js/ko.iconpicker.js", "js/octodashcompanion.js"],
+			js=["js/jquery-ui.min.js", "js/knockout-sortable.1.2.0.js", "js/fontawesome-iconpicker.min.js", "js/ko.iconpicker.js", "js/octodashcompanion.js"],
 			css=["css/fontawesome-iconpicker.min.css", "css/octodashcompanion.css"]
 		)
 
@@ -161,7 +205,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 			fan, fan_set_speed = fan_match.groups()
 			if fan is None:
 				fan = 1
-			self._plugin_manager.send_plugin_message("octodash", {"fanspeed": {"{}".format(fan): (int("{}".format(fan_set_speed))/255 * 100)}})
+			self._plugin_manager.send_plugin_message("octodash", {
+				"fanspeed": {"{}".format(fan): (int("{}".format(fan_set_speed)) / 255 * 100)}})
 
 	# ~~ extension_tree hook
 
