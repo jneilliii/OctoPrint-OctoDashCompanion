@@ -28,7 +28,9 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		self.config_file = normalize("{}/config.json".format(_default_configdir("octodash")))
 		self.use_received_fan_speeds = False
 		self.fan_regex = re.compile("M106 (?:P([0-9]) )?S([0-9]+)")
-		self.forced_types = {"plugins": {"tasmota": {"index": "int"}, "tasmotaMqtt": {"relayNumber": "int"}, "enclosure": {"ambientSensorID": "int", "filament1SensorID": "int", "filament2SensorID": "int"}}}
+		self.forced_types = {"plugins": {"tasmota": {"index": "int"}, "tasmotaMqtt": {"relayNumber": "int"},
+										 "enclosure": {"ambientSensorID": "int", "filament1SensorID": "int",
+													   "filament2SensorID": "int"}}}
 
 	# ~~ SettingsPlugin mixin
 
@@ -78,7 +80,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 										sub_items[sub_items_items][key] = int(sub_items[sub_items_items][key])
 									if self.forced_types[item][sub_items_items][key] == "bool":
 										sub_items[sub_items_items][key] = bool(sub_items[sub_items_items][key])
-			self._logger.info("creating backup of {} to {}.bak".format(self.config_file, {"config": new_config_settings}))
+			self._logger.info(
+				"creating backup of {} to {}.bak".format(self.config_file, {"config": new_config_settings}))
 			shutil.copyfile(self.config_file, "{}.bak".format(self.config_file))
 			self._logger.info("merging settings to {}: {}".format(self.config_file, {"config": new_config_settings}))
 			with open(self.config_file, "r") as old_settings_file:
@@ -196,18 +199,26 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		if not Permissions.PLUGIN_OCTODASHCOMPANTION_MANAGEBACKUPS.can():
 			return flask.make_response("Insufficient rights", 403)
 
-		if command == "backup_config":
-			self._logger.info("Creating backup of {} as {}.bak".format(self.config_file, self.config_file))
-			shutil.copyfile(self.config_file, "{}".format(self.get_plugin_data_folder()))
-		if command == "restore_config":
-			self._logger.info("Restoring backup {}.bak as {}".format(self.config_file, self.config_file))
-			shutil.copyfile("{}.bak".format(self.config_file), self.config_file)
+		try:
+			if command == "backup_config":
+				self._logger.info(
+					"Creating backup of {} as {}/config.json".format(self.config_file, self.get_plugin_data_folder()))
+				shutil.copyfile(self.config_file, "{}/config.json".format(self.get_plugin_data_folder()))
+				return flask.jsonify({"success": True})
+			if command == "restore_config":
+				self._logger.info(
+					"Restoring backup {}/config.json as {}".format(self.get_plugin_data_folder(), self.config_file))
+				shutil.copyfile("{}/config.json".format(self.get_plugin_data_folder()), self.config_file)
+				return flask.jsonify({"success": True})
+		except Exception as e:
+			return flask.jsonify({"success": False, "error": e.strerror})
 
 	# ~~ AssetPlugin mixin
 
 	def get_assets(self):
 		return dict(
-			js=["js/jquery-ui.min.js", "js/knockout-sortable.1.2.0.js", "js/fontawesome-iconpicker.min.js", "js/ko.iconpicker.js", "js/octodashcompanion.js"],
+			js=["js/jquery-ui.min.js", "js/knockout-sortable.1.2.0.js", "js/fontawesome-iconpicker.min.js",
+				"js/ko.iconpicker.js", "js/octodashcompanion.js"],
 			css=["css/fontawesome-iconpicker.min.css", "css/octodashcompanion.css"]
 		)
 

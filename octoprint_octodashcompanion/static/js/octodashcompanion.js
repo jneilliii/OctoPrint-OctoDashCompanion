@@ -10,7 +10,9 @@ $(function() {
 
         self.settingsViewModel = parameters[0];
         self.selected_command = ko.observable();
+        self.process = ko.observable();
         self.processing = ko.observable(false);
+        self.backup_message = ko.observable('');
 
         self.add_custom_action = function(){
             self.selected_command({
@@ -24,11 +26,67 @@ $(function() {
         };
 
         self.perform_backup = function(){
-            OctoPrint.simpleApiCommand("octodashcompanion", "backup_config");
+            self.process('backup');
+            self.processing(true);
+            OctoPrint.simpleApiCommand("octodashcompanion", "backup_config").done(function(data){
+                if (data.success === true) {
+                    $('#backup_btn').addClass("btn-success");
+                    self.backup_message("Success!");
+                    setTimeout(function(){
+                        $('#backup_btn').removeClass("btn-success");
+                        self.backup_message('');
+                        self.processing(false);
+                        }, 3000);
+                } else {
+                    $('#backup_btn').addClass("btn-danger");
+                    setTimeout(function(){
+                        $('#backup_btn').removeClass("btn-danger");
+                        self.backup_message('');
+                        self.processing(false);
+                        }, 3000);
+                    self.backup_message("Error: " + data.error);
+                }
+            }).fail(function(data){
+                $('#backup_btn').addClass("btn-danger");
+                self.backup_message("Error: " + data.responseJSON.error);
+                setTimeout(function(){
+                    $('#backup_btn').removeClass("btn-danger");
+                    self.backup_message('');
+                    self.processing(false);
+                    }, 3000);
+            });
         };
 
         self.perform_restore = function(){
-
+            self.process('restore');
+            self.processing(true);
+            OctoPrint.simpleApiCommand("octodashcompanion", "restore_config").done(function(data){
+               if (data.success === true) {
+                    $('#restore_btn').addClass("btn-success");
+                    self.backup_message("Success!");
+                    setTimeout(function(){
+                        $('#restore_btn').removeClass("btn-success");
+                        self.backup_message('');
+                        self.processing(false);
+                        }, 3000);
+                } else {
+                    $('#restore_btn').addClass("btn-danger");
+                    setTimeout(function(){
+                        $('#restore_btn').removeClass("btn-danger");
+                        self.backup_message('');
+                        self.processing(false);
+                        }, 3000);
+                    self.backup_message("Error: " + data.error);
+                }
+            }).fail(function(data){
+                $('#restore_btn').addClass("btn-danger");
+                self.backup_message("Error: " + data.responseJSON.error);
+                setTimeout(function(){
+                    $('#restore_btn').removeClass("btn-danger");
+                    self.backup_message('');
+                    self.processing(false);
+                    }, 3000);
+            });
         };
 
         self.add_custom_action_token = function(data, event) {
