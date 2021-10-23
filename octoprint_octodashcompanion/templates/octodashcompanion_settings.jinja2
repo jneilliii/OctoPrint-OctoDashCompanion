@@ -4,6 +4,7 @@
         <li class="active"><a data-toggle="tab" href="#octodashcomanion_general">General</a></li>
         <li><a data-toggle="tab" href="#octodashcomanion_custom_actions">Custom Actions</a></li>
         <li><a data-toggle="tab" href="#octodashcomanion_plugins">Plugins</a></li>
+        <li><a data-toggle="tab" href="#octodashcomanion_backup">Backup/Restore</a></li>
     </ul>
     <form class="form" id="settings_plugin_octodashcompanion_form">
         <div class="tab-content">
@@ -200,6 +201,15 @@
                     </div>
                 </div>
                 <!-- /ko -->
+            </div>
+            <div id="octodashcomanion_backup" class="tab-pane">
+                <div class="row-fluid">
+                    <div class="well">Use the buttons below to create a backup of config.json or restore the last created backup. These backups will be generated in the plugin's data folder inside OctoPrint's environment, which will also get backed up during a full backup of OctoPrint.</div>
+                    <div class="control-group">
+                        <button class="btn btn-primary" data-bind="click: perform_backup, disable: processing()" title="Create a backup of config.json."><i class="fas" aria-hidden="true" data-bind="css: {'fa-save': !processing(), 'fa-recycle fa-spin': processing()}"></i> Create Backup</button></label>
+                        <button class="btn btn-primary" data-bind="click: perform_restore, disable: processing()" title="Restore previous backup of config.json."><i class="fas" aria-hidden="true" data-bind="css: {'fa-trash-restore': !processing(), 'fa-recycle fa-spin': processing()}"></i> Restore Backup</button></label>
+                    </div>
+                </div>
             </div>
         </div>
     </form>

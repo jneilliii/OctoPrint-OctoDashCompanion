@@ -10,6 +10,7 @@ $(function() {
 
         self.settingsViewModel = parameters[0];
         self.selected_command = ko.observable();
+        self.processing = ko.observable(false);
 
         self.add_custom_action = function(){
             self.selected_command({
@@ -20,6 +21,14 @@ $(function() {
                 'icon': ko.observable('home')
             });
             self.settingsViewModel.settings.plugins.octodashcompanion.config.octodash.customActions.push(self.selected_command());
+        };
+
+        self.perform_backup = function(){
+            OctoPrint.simpleApiCommand("octodashcompanion", "backup_config");
+        };
+
+        self.perform_restore = function(){
+
         };
 
         self.add_custom_action_token = function(data, event) {

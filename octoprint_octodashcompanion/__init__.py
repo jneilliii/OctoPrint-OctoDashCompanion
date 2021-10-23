@@ -3,10 +3,12 @@ from __future__ import absolute_import
 
 import octoprint.plugin
 import octoprint.filemanager.util
+from flask_babel import gettext
 from octoprint.filemanager import FileDestinations
 from octoprint.util.paths import normalize
 from octoprint.events import Events
 from octoprint.util import dict_merge
+from octoprint.access.permissions import Permissions, ADMIN_GROUP
 import flask
 import os
 import sys
@@ -19,7 +21,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 							  octoprint.plugin.AssetPlugin,
 							  octoprint.plugin.TemplatePlugin,
 							  octoprint.plugin.EventHandlerPlugin,
-							  octoprint.plugin.BlueprintPlugin):
+							  octoprint.plugin.BlueprintPlugin,
+							  octoprint.plugin.SimpleApiPlugin):
 
 	def __init__(self):
 		self.config_file = normalize("{}/config.json".format(_default_configdir("octodash")))
@@ -75,6 +78,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 										sub_items[sub_items_items][key] = int(sub_items[sub_items_items][key])
 									if self.forced_types[item][sub_items_items][key] == "bool":
 										sub_items[sub_items_items][key] = bool(sub_items[sub_items_items][key])
+			self._logger.info("creating backup of {} to {}.bak".format(self.config_file, {"config": new_config_settings}))
+			shutil.copyfile(self.config_file, "{}.bak".format(self.config_file))
 			self._logger.info("merging settings to {}: {}".format(self.config_file, {"config": new_config_settings}))
 			with open(self.config_file, "r") as old_settings_file:
 				config_file_json = json.load(old_settings_file)
@@ -100,7 +105,20 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 				self._file_manager.remove_file(FileDestinations.LOCAL, payload["path"])
 				self._settings.save(force=True, trigger_event=True)
 
+	# ~~ Access Permissions Hook
+
+	def get_additional_permissions(self, *args, **kwargs):
+		return [
+			dict(key="MANAGEBACKUPS",
+				 name="Manage Backups",
+				 description=gettext("Allow backup and restore of config.json."),
+				 roles=["admin"],
+				 dangerous=True,
+				 default_groups=[ADMIN_GROUP])
+		]
+
 	# ~~ BluePrint routes
+
 	@octoprint.plugin.BlueprintPlugin.route("webcam")
 	def webcam_route(self):
 		webcam_url = self._settings.global_get(["webcam", "stream"])
@@ -165,6 +183,25 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 	def is_blueprint_protected(self):
 		return False
+
+	# ~~ SimpleApiPlugin mixin
+
+	def get_api_commands(self):
+		return dict(
+			backup_config=[],
+			restore_config=[]
+		)
+
+	def on_api_command(self, command, data):
+		if not Permissions.PLUGIN_OCTODASHCOMPANTION_MANAGEBACKUPS.can():
+			return flask.make_response("Insufficient rights", 403)
+
+		if command == "backup_config":
+			self._logger.info("Creating backup of {} as {}.bak".format(self.config_file, self.config_file))
+			shutil.copyfile(self.config_file, "{}".format(self.get_plugin_data_folder()))
+		if command == "restore_config":
+			self._logger.info("Restoring backup {}.bak as {}".format(self.config_file, self.config_file))
+			shutil.copyfile("{}.bak".format(self.config_file), self.config_file)
 
 	# ~~ AssetPlugin mixin
 
@@ -283,5 +320,6 @@ def __plugin_load__():
 		"octoprint.comm.protocol.gcode.received": __plugin_implementation__.process_received_gcode,
 		"octoprint.comm.protocol.gcode.sent": __plugin_implementation__.process_sent_gcode,
 		"octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
+		"octoprint.access.permissions": __plugin_implementation__.get_additional_permissions,
 		"octoprint.filemanager.extension_tree": __plugin_implementation__.get_extension_tree,
 	}
