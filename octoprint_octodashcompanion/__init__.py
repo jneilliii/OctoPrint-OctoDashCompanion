@@ -108,18 +108,6 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 				self._file_manager.remove_file(FileDestinations.LOCAL, payload["path"])
 				self._settings.save(force=True, trigger_event=True)
 
-	# ~~ Access Permissions Hook
-
-	def get_additional_permissions(self, *args, **kwargs):
-		return [
-			dict(key="MANAGEBACKUPS",
-				 name="Manage Backups",
-				 description=gettext("Allow backup and restore of config.json."),
-				 roles=["admin"],
-				 dangerous=True,
-				 default_groups=[ADMIN_GROUP])
-		]
-
 	# ~~ BluePrint routes
 
 	@octoprint.plugin.BlueprintPlugin.route("webcam")
@@ -187,6 +175,18 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 	def is_blueprint_protected(self):
 		return False
 
+	# ~~ Access Permissions Hook
+
+	def get_additional_permissions(self, *args, **kwargs):
+		return [
+			dict(key="MANAGEBACKUPS",
+				 name="Manage Backups",
+				 description=gettext("Allow backup and restore of config.json."),
+				 roles=["admin"],
+				 dangerous=True,
+				 default_groups=[ADMIN_GROUP])
+		]
+
 	# ~~ SimpleApiPlugin mixin
 
 	def get_api_commands(self):
@@ -196,7 +196,7 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		)
 
 	def on_api_command(self, command, data):
-		if not Permissions.PLUGIN_OCTODASHCOMPANTION_MANAGEBACKUPS.can():
+		if not Permissions.PLUGIN_OCTODASHCOMPANION_MANAGEBACKUPS.can():
 			return flask.make_response("Insufficient rights", 403)
 
 		try:
