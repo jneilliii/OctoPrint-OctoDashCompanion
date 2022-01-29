@@ -15,6 +15,7 @@ import sys
 import shutil
 import json
 import re
+from datetime import datetime, timezone
 
 
 class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
@@ -46,6 +47,10 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		self._logger.info("loaded data from {}: {}".format(self.config_file, config_file_json))
 		if config_file_json is not None:
 			config_file_json["config_directory"] = self.config_file
+			if os.path.exists("{}/config.json".format(self.get_plugin_data_folder())):
+				config_file_json["last_backup"] = datetime.fromtimestamp(os.stat("{}/config.json".format(self.get_plugin_data_folder())).st_mtime).strftime("%x %X")
+			else:
+				config_file_json["last_backup"] = ""
 			return config_file_json
 		else:
 			self._logger.info("unable to open {} returning default settings.".format(self.config_file))
@@ -204,12 +209,12 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 				self._logger.info(
 					"Creating backup of {} as {}/config.json".format(self.config_file, self.get_plugin_data_folder()))
 				shutil.copyfile(self.config_file, "{}/config.json".format(self.get_plugin_data_folder()))
-				return flask.jsonify({"success": True})
+				return flask.jsonify({"success": True, "last_backup": datetime.fromtimestamp(os.stat("{}/config.json".format(self.get_plugin_data_folder())).st_mtime).strftime("%x %X")})
 			if command == "restore_config":
 				self._logger.info(
 					"Restoring backup {}/config.json as {}".format(self.get_plugin_data_folder(), self.config_file))
 				shutil.copyfile("{}/config.json".format(self.get_plugin_data_folder()), self.config_file)
-				return flask.jsonify({"success": True})
+				return flask.jsonify({"success": True, "last_backup": datetime.fromtimestamp(os.stat("{}/config.json".format(self.get_plugin_data_folder())).st_mtime).strftime("%x %X")})
 		except Exception as e:
 			return flask.jsonify({"success": False, "error": e.strerror})
 

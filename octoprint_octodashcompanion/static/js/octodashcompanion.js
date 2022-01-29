@@ -32,6 +32,7 @@ $(function() {
                 if (data.success === true) {
                     $('#backup_btn').addClass("btn-success");
                     self.backup_message("Success!");
+                    self.settingsViewModel.settings.plugins.octodashcompanion.last_backup(data.last_backup);
                     setTimeout(function(){
                         $('#backup_btn').removeClass("btn-success");
                         self.backup_message('');
@@ -64,6 +65,7 @@ $(function() {
                if (data.success === true) {
                     $('#restore_btn').addClass("btn-success");
                     self.backup_message("Success!");
+                    self.settingsViewModel.settings.plugins.octodashcompanion.last_backup(data.last_backup);
                     setTimeout(function(){
                         $('#restore_btn').removeClass("btn-success");
                         self.backup_message('');
