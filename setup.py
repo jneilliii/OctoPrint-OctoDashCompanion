@@ -14,7 +14,7 @@ plugin_package = "octoprint_octodashcompanion"
 plugin_name = "OctoDash Companion"
 
 # The plugin's version. Can be overwritten within OctoPrint's internal data via __plugin_version__ in the plugin module
-plugin_version = "0.0.7rc4"
+plugin_version = "0.0.7rc5"
 
 # The plugin's description. Can be overwritten within OctoPrint's internal data via __plugin_description__ in the plugin
 # module

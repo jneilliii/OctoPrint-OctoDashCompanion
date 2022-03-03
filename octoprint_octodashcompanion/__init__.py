@@ -177,6 +177,32 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		response.headers["X-Frame-Options"] = ""
 		return response
 
+	@octoprint.plugin.BlueprintPlugin.route("switch_instance")
+	def switch_instance_route(self):
+		instance = flask.request.values.get("url")
+		if instance is None:
+			flask.abort(400, description="Missing instance url parameter")
+
+		instance_url = "http://{}/".format(instance)
+
+		with open(self.config_file, "r") as old_settings_file:
+			config_file_json = json.load(old_settings_file)
+			config_to_save = dict_merge(config_file_json, {"config": {"octoprint": {"url": instance_url}}})
+		with open(self.config_file, "w") as new_settings_file:
+			json.dump(config_to_save, new_settings_file, indent="\t")
+			self._event_bus.fire(Events.SETTINGS_UPDATED)
+
+		self._logger.debug("Restarting OctoDash due to instance change")
+		import subprocess
+		import shlex
+		try:
+			subprocess.run(shlex.split("sudo service getty@tty1 restart"))
+		except subprocess.CalledProcessError as e:
+			self._logger.debug("There was an error attempting to restart OctoDash: {}".format(e))
+			return flask.jsonify({"restart": False, "instance_url": instance_url})
+
+		return flask.jsonify({"instance_url": instance_url})
+
 	def is_blueprint_protected(self):
 		return False
 
