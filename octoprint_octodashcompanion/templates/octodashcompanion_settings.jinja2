@@ -4,6 +4,7 @@
         <li class="active"><a data-toggle="tab" href="#octodashcomanion_general">General</a></li>
         <li><a data-toggle="tab" href="#octodashcomanion_custom_actions">Custom Actions</a></li>
         <li><a data-toggle="tab" href="#octodashcomanion_plugins">Plugins</a></li>
+        <li><a data-toggle="tab" href="#octodashcomanion_backup">Backup/Restore</a></li>
     </ul>
     <form class="form" id="settings_plugin_octodashcompanion_form">
         <div class="tab-content">
@@ -69,6 +70,9 @@
                                                             <li><a href="#" data-bind="click: $root.add_custom_action_token">[!RESTARTSERVICE]</a></li>
                                                             <li><a href="#" data-bind="click: $root.add_custom_action_token">[!SLEEP]</a></li>
                                                             <li><a href="#" data-bind="click: $root.add_custom_action_token">[!NEOPIXEL]identifier,red,green,blue</a></li>
+                                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!OUTPUT]identifier,status</a></li>
+                                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!OUTPUT_PWM]identifier,duty-cycle</a></li>
+                                                            <li><a href="#" data-bind="click: $root.add_custom_action_token">[!SWITCH_INSTANCE]</a></li>
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -130,6 +134,11 @@
                 <div class="control-group">
                     <div class="controls">
                         <label class="checkbox">{{ _('Filament Manager') }}<input type="checkbox" data-bind="checked: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.filamentManager.enabled" /></label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <label class="checkbox">{{ _('Spool Manager') }}<input type="checkbox" data-bind="checked: settingsViewModel.settings.plugins.octodashcompanion.config.plugins.spoolManager.enabled" /></label>
                     </div>
                 </div>
                 <div class="control-group">
@@ -198,6 +207,17 @@
                     </div>
                 </div>
                 <!-- /ko -->
+            </div>
+            <div id="octodashcomanion_backup" class="tab-pane">
+                <div class="row-fluid">
+                    <div class="well">Use the buttons below to create a backup of config.json or restore the last created backup. These backups will be generated in the plugin's data folder inside OctoPrint's environment, which will also get backed up during a full backup of OctoPrint.</div>
+                    <div class="control-group">
+                        <button class="btn btn-primary" id="backup_btn" data-bind="click: perform_backup, disable: processing() && process() == 'backup'" title="Create a backup of config.json."><i class="fas fa-save" aria-hidden="true"></i> Create Backup</button>
+                        <button class="btn btn-primary" id="restore_btn" data-bind="click: perform_restore, disable: processing() && process() == 'restore'" title="Restore previous backup of config.json."><i class="fas fa-trash-restore" aria-hidden="true"></i> Restore Backup</button>
+                    </div>
+                    <div class="row-fluid" data-bind="text: backup_message"></div>
+                    <div class="row-fluid"><span>{{ _('Last Backup') }}:</span> <span data-bind="text: settingsViewModel.settings.plugins.octodashcompanion.last_backup"></span></div>
+                </div>
             </div>
         </div>
     </form>

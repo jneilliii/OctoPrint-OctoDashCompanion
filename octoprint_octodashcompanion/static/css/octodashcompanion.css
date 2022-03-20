@@ -50,3 +50,58 @@
     background-color: #121417;
     border-color: #121417;
 }
+
+html.UICTheme_discoranged .iconpicker-popover.popover,
+html.themeify.discoranged .iconpicker-popover.popover,
+html.UICTheme_discorded .iconpicker-popover.popover,
+html.themeify.discorded .iconpicker-popover.popover {
+  background: #36393f;
+}
+html.UICTheme_discoranged .iconpicker .iconpicker-items,
+html.themeify.discoranged .iconpicker .iconpicker-items,
+html.UICTheme_discorded .iconpicker .iconpicker-items,
+html.themeify.discorded .iconpicker .iconpicker-items {
+  background: #36393f;
+}
+
+html.UICTheme_bluemoon .iconpicker-popover.popover {
+  background: #16213e;
+}
+html.themeify.bluemoon .iconpicker .iconpicker-items {
+  background: #16213e;
+}
+
+html.UICTheme_cyborg .iconpicker-popover.popover {
+  background: #121417;
+}
+html.themeify.cyborg .iconpicker .iconpicker-items {
+  background: #121417;
+}
+
+html.UICTheme_darkgreen .iconpicker-popover.popover {
+  background: #3c3f36;
+}
+html.themeify.darkgreen .iconpicker .iconpicker-items {
+  background: #3c3f36;
+}
+
+html.UICTheme_prusatribute .iconpicker-popover.popover {
+  background: #2a333c;
+}
+html.themeify.prusatribute .iconpicker .iconpicker-items {
+  background: #2a333c;
+}
+
+html.UICTheme_red-night .iconpicker-popover.popover {
+  background: #1e1e20;
+}
+html.themeify.red-night .iconpicker .iconpicker-items {
+  background: #1e1e20;
+}
+
+html.UICTheme_slate .iconpicker-popover.popover {
+  background: #272b30;
+}
+html.themeify.slate .iconpicker .iconpicker-items {
+  background: #272b30;
+}
