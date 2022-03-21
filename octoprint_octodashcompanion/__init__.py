@@ -180,6 +180,7 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 	@octoprint.plugin.BlueprintPlugin.route("switch_instance")
 	def switch_instance_route(self):
 		instance = flask.request.values.get("url")
+        instance_name = flask.request.values.get("name")
 		if instance is None:
 			flask.abort(400, description="Missing instance url parameter")
 
@@ -187,7 +188,7 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 		with open(self.config_file, "r") as old_settings_file:
 			config_file_json = json.load(old_settings_file)
-			config_to_save = dict_merge(config_file_json, {"config": {"octoprint": {"url": instance_url}}})
+			config_to_save = dict_merge(config_file_json, {"config": {"octoprint": {"url": instance_url}, "printer": {"name": instance_name}})
 		with open(self.config_file, "w") as new_settings_file:
 			json.dump(config_to_save, new_settings_file, indent="\t")
 			self._event_bus.fire(Events.SETTINGS_UPDATED)
