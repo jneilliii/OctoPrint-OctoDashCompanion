@@ -181,6 +181,7 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 	def switch_instance_route(self):
 		instance = flask.request.values.get("url")
         instance_name = flask.request.values.get("name")
+
 		if instance is None:
 			flask.abort(400, description="Missing instance url parameter")
 
