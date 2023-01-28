@@ -41,10 +41,10 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		)
 
 	def on_settings_load(self):
-		self._logger.info("attempting open of {}.".format(self.config_file))
+		self._logger.debug("attempting open of {}.".format(self.config_file))
 		with open(self.config_file) as file:
 			config_file_json = json.load(file)
-		self._logger.info("loaded data from {}: {}".format(self.config_file, config_file_json))
+		self._logger.debug("loaded data from {}".format(self.config_file))
 		if config_file_json is not None:
 			config_file_json["config_directory"] = self.config_file
 			if os.path.exists("{}/config.json".format(self.get_plugin_data_folder())):
@@ -53,11 +53,11 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 				config_file_json["last_backup"] = ""
 			return config_file_json
 		else:
-			self._logger.info("unable to open {} returning default settings.".format(self.config_file))
+			self._logger.debug("unable to open {} returning default settings.".format(self.config_file))
 			return self.get_settings_defaults()
 
 	def on_settings_save(self, data):
-		self._logger.info("settings received: {}".format(data))
+		self._logger.debug("settings received: {}".format(data))
 		# build our settings up that are to persist in octoprint's settings
 		# currently it doesn't really do anything because the config_directory setting
 		# is not exposed as an editable field in settings, and don't think it needs
@@ -67,7 +67,7 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 			settings_to_save["config_directory"] = data.get("config_directory")
 
 		if settings_to_save != {}:
-			self._logger.info("saving settings: {}".format(settings_to_save))
+			self._logger.debug("saving settings: {}".format(settings_to_save))
 			octoprint.plugin.SettingsPlugin.on_settings_save(self, settings_to_save)
 
 		# save changes to config.json in config_directory
@@ -85,10 +85,10 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 										sub_items[sub_items_items][key] = int(sub_items[sub_items_items][key])
 									if self.forced_types[item][sub_items_items][key] == "bool":
 										sub_items[sub_items_items][key] = bool(sub_items[sub_items_items][key])
-			self._logger.info(
+			self._logger.debug(
 				"creating backup of {} to {}.bak".format(self.config_file, {"config": new_config_settings}))
 			shutil.copyfile(self.config_file, "{}.bak".format(self.config_file))
-			self._logger.info("merging settings to {}: {}".format(self.config_file, {"config": new_config_settings}))
+			self._logger.debug("merging settings to {}: {}".format(self.config_file, {"config": new_config_settings}))
 			with open(self.config_file, "r") as old_settings_file:
 				config_file_json = json.load(old_settings_file)
 				config_to_save = dict_merge(config_file_json, {"config": new_config_settings})
@@ -100,16 +100,16 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 			if payload["target"] == "local" and payload["path"] == "custom-styles.css":
 				source_file = self._file_manager.sanitize_path(FileDestinations.LOCAL, payload["path"])
 				destination_file = normalize("{}/custom-styles.css".format(self._settings.get(["config_directory"])))
-				self._logger.info("attempting copy of {} to {}".format(source_file, destination_file))
+				self._logger.debug("attempting copy of {} to {}".format(source_file, destination_file))
 				shutil.copyfile(source_file, destination_file)
-				self._logger.info("attempting removal of {}".format(source_file))
+				self._logger.debug("attempting removal of {}".format(source_file))
 				self._file_manager.remove_file(FileDestinations.LOCAL, payload["path"])
 			if payload["target"] == "local" and payload["path"] == "config.json":
 				source_file = self._file_manager.sanitize_path(FileDestinations.LOCAL, payload["path"])
 				destination_file = normalize("{}/config.json".format(self._settings.get(["config_directory"])))
-				self._logger.info("attempting copy of {} to {}".format(source_file, destination_file))
+				self._logger.debug("attempting copy of {} to {}".format(source_file, destination_file))
 				shutil.copyfile(source_file, destination_file)
-				self._logger.info("attempting removal of {}".format(source_file))
+				self._logger.debug("attempting removal of {}".format(source_file))
 				self._file_manager.remove_file(FileDestinations.LOCAL, payload["path"])
 				self._settings.save(force=True, trigger_event=True)
 
@@ -234,12 +234,12 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 		try:
 			if command == "backup_config":
-				self._logger.info(
+				self._logger.debug(
 					"Creating backup of {} as {}/config.json".format(self.config_file, self.get_plugin_data_folder()))
 				shutil.copyfile(self.config_file, "{}/config.json".format(self.get_plugin_data_folder()))
 				return flask.jsonify({"success": True, "last_backup": datetime.fromtimestamp(os.stat("{}/config.json".format(self.get_plugin_data_folder())).st_mtime).strftime("%x %X")})
 			if command == "restore_config":
-				self._logger.info(
+				self._logger.debug(
 					"Restoring backup {}/config.json as {}".format(self.get_plugin_data_folder(), self.config_file))
 				shutil.copyfile("{}/config.json".format(self.get_plugin_data_folder()), self.config_file)
 				return flask.jsonify({"success": True, "last_backup": datetime.fromtimestamp(os.stat("{}/config.json".format(self.get_plugin_data_folder())).st_mtime).strftime("%x %X")})
