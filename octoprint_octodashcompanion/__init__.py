@@ -29,9 +29,29 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		self.config_file = normalize("{}/config.json".format(_default_configdir("octodash")))
 		self.use_received_fan_speeds = False
 		self.fan_regex = re.compile("M106 (?:P([0-9]) )?S([0-9]+)")
-		self.forced_types = {"plugins": {"tasmota": {"index": "int"}, "tasmotaMqtt": {"relayNumber": "int"},
-										 "enclosure": {"ambientSensorID": "int", "filament1SensorID": "int",
-													   "filament2SensorID": "int"}}}
+		self.forced_types = {
+			"filament": {
+				"thickness": "float",
+				"density": "float",
+				"feedLength": "int",
+				"feedSpeed": "int",
+				"feedSpeedSlow": "int",
+				"purgeDistance": "int"
+			},
+			"plugins": {
+				"tasmota": {
+					"index": "int"
+				},
+				"tasmotaMqtt": {
+					"relayNumber": "int"
+				},
+				"enclosure": {
+					"ambientSensorID": "int",
+					"filament1SensorID": "int",
+					"filament2SensorID": "int"
+				}
+			}
+		}
 
 	# ~~ SettingsPlugin mixin
 
@@ -48,7 +68,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		if config_file_json is not None:
 			config_file_json["config_directory"] = self.config_file
 			if os.path.exists("{}/config.json".format(self.get_plugin_data_folder())):
-				config_file_json["last_backup"] = datetime.fromtimestamp(os.stat("{}/config.json".format(self.get_plugin_data_folder())).st_mtime).strftime("%x %X")
+				config_file_json["last_backup"] = datetime.fromtimestamp(
+					os.stat("{}/config.json".format(self.get_plugin_data_folder())).st_mtime).strftime("%x %X")
 			else:
 				config_file_json["last_backup"] = ""
 			return config_file_json
@@ -79,12 +100,22 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 					sub_items = new_config_settings[item]
 					for sub_items_items in sub_items:
 						if sub_items_items in self.forced_types[item]:
-							for key in sub_items[sub_items_items]:
-								if key in self.forced_types[item][sub_items_items]:
-									if self.forced_types[item][sub_items_items][key] == "int":
-										sub_items[sub_items_items][key] = int(sub_items[sub_items_items][key])
-									if self.forced_types[item][sub_items_items][key] == "bool":
-										sub_items[sub_items_items][key] = bool(sub_items[sub_items_items][key])
+							if item == "plugins":
+								for key in sub_items[sub_items_items]:
+									if key in self.forced_types[item][sub_items_items]:
+										if self.forced_types[item][sub_items_items][key] == "int":
+											sub_items[sub_items_items][key] = int(sub_items[sub_items_items][key])
+										elif self.forced_types[item][sub_items_items][key] == "float":
+											sub_items[sub_items_items][key] = float(sub_items[sub_items_items][key])
+										elif self.forced_types[item][sub_items_items][key] == "bool":
+											sub_items[sub_items_items][key] = bool(sub_items[sub_items_items][key])
+							elif item == "filament":
+								if self.forced_types[item][sub_items_items] == "int":
+									sub_items[sub_items_items] = int(sub_items[sub_items_items])
+								elif self.forced_types[item][sub_items_items] == "float":
+									sub_items[sub_items_items] = float(sub_items[sub_items_items])
+								elif self.forced_types[item][sub_items_items] == "bool":
+									sub_items[sub_items_items] = bool(sub_items[sub_items_items])
 			self._logger.debug(
 				"creating backup of {} to {}.bak".format(self.config_file, {"config": new_config_settings}))
 			shutil.copyfile(self.config_file, "{}.bak".format(self.config_file))
@@ -189,7 +220,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 		with open(self.config_file, "r") as old_settings_file:
 			config_file_json = json.load(old_settings_file)
-			config_to_save = dict_merge(config_file_json, {"config": {"octoprint": {"url": instance_url}, "printer": {"name": instance_name}}})
+			config_to_save = dict_merge(config_file_json, {
+				"config": {"octoprint": {"url": instance_url}, "printer": {"name": instance_name}}})
 		with open(self.config_file, "w") as new_settings_file:
 			json.dump(config_to_save, new_settings_file, indent="\t")
 			self._event_bus.fire(Events.SETTINGS_UPDATED)
@@ -237,12 +269,14 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 				self._logger.debug(
 					"Creating backup of {} as {}/config.json".format(self.config_file, self.get_plugin_data_folder()))
 				shutil.copyfile(self.config_file, "{}/config.json".format(self.get_plugin_data_folder()))
-				return flask.jsonify({"success": True, "last_backup": datetime.fromtimestamp(os.stat("{}/config.json".format(self.get_plugin_data_folder())).st_mtime).strftime("%x %X")})
+				return flask.jsonify({"success": True, "last_backup": datetime.fromtimestamp(
+					os.stat("{}/config.json".format(self.get_plugin_data_folder())).st_mtime).strftime("%x %X")})
 			if command == "restore_config":
 				self._logger.debug(
 					"Restoring backup {}/config.json as {}".format(self.get_plugin_data_folder(), self.config_file))
 				shutil.copyfile("{}/config.json".format(self.get_plugin_data_folder()), self.config_file)
-				return flask.jsonify({"success": True, "last_backup": datetime.fromtimestamp(os.stat("{}/config.json".format(self.get_plugin_data_folder())).st_mtime).strftime("%x %X")})
+				return flask.jsonify({"success": True, "last_backup": datetime.fromtimestamp(
+					os.stat("{}/config.json".format(self.get_plugin_data_folder())).st_mtime).strftime("%x %X")})
 		except Exception as e:
 			return flask.jsonify({"success": False, "error": e.strerror})
 
