@@ -30,7 +30,6 @@ Use the Plugins tab to enable and set specific settings related to OctoPrint plu
 - [@Mearman](https://github.com/Mearman)
 - [@TheTuxKeeper](https://github.com/thetuxkeeper)
 - [@tideline3d](https://github.com/tideline3d/)
-- [OctoFarm](https://octofarm.net/)
 - [SimplyPrint](https://simplyprint.dk/)
 - [Andrew Beeman](https://github.com/Kiendeleo)
 - [Calanish](https://github.com/calanish)
