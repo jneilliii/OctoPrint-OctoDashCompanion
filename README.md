@@ -29,6 +29,7 @@ Use the Plugins tab to enable and set specific settings related to OctoPrint plu
 - Andreas Lindermayr
 - [@TheTuxKeeper](https://github.com/thetuxkeeper)
 - [@tideline3d](https://github.com/tideline3d/)
+- [SimplyPrint](https://simplyprint.io/)
 - [Andrew Beeman](https://github.com/Kiendeleo)
 - [Calanish](https://github.com/calanish)
 - [Lachlan Bell](https://lachy.io/)
