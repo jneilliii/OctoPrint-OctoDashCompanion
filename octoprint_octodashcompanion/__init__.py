@@ -1,8 +1,4 @@
-# coding=utf-8
-from __future__ import absolute_import
-
 import octoprint.plugin
-import octoprint.filemanager.util
 from flask_babel import gettext
 from octoprint.filemanager import FileDestinations
 from octoprint.util.paths import normalize
@@ -15,7 +11,7 @@ import sys
 import shutil
 import json
 import re
-from datetime import datetime, timezone
+from datetime import datetime
 
 
 class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
