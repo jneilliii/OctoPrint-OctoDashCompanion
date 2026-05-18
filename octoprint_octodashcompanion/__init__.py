@@ -260,6 +260,9 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 	def get_template_vars(self):
 		return {"plugin_version": self._plugin_version}
 
+	def is_template_autoescaped(self):
+		return True
+
 	# ~~ GCode Received hook
 
 	def process_received_gcode(self, comm, line, *args, **kwargs):
