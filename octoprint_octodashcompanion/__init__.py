@@ -203,6 +203,9 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 	def is_blueprint_protected(self):
 		return False
 
+	def is_blueprint_csrf_protected(self):
+		return False
+
 	# ~~ Access Permissions Hook
 
 	def get_additional_permissions(self, *args, **kwargs):
