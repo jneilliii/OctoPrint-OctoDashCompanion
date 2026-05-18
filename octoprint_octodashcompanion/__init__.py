@@ -216,6 +216,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		]
 
 	# ~~ SimpleApiPlugin mixin
+	def is_api_protected(self):
+		return True
 
 	def get_api_commands(self):
 		return dict(
