@@ -1,17 +1,18 @@
+import json
+import os
+import re
+import shutil
+import sys
+from datetime import datetime
+
+import flask
 import octoprint.plugin
 from flask_babel import gettext
-from octoprint.filemanager import FileDestinations
-from octoprint.util.paths import normalize
+from octoprint.access.permissions import ADMIN_GROUP, Permissions
 from octoprint.events import Events
+from octoprint.filemanager import FileDestinations
 from octoprint.util import dict_merge
-from octoprint.access.permissions import Permissions, ADMIN_GROUP
-import flask
-import os
-import sys
-import shutil
-import json
-import re
-from datetime import datetime
+from octoprint.util.paths import normalize
 
 
 class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
@@ -147,8 +148,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 	@octoprint.plugin.BlueprintPlugin.route("restart")
 	def restart_route(self):
 		self._logger.debug("Restart OctoDash request received")
-		import subprocess
 		import shlex
+		import subprocess
 		try:
 			subprocess.run(shlex.split("sudo service getty@tty1 restart"))
 		except subprocess.CalledProcessError as e:
@@ -189,8 +190,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 			self._event_bus.fire(Events.SETTINGS_UPDATED)
 
 		self._logger.debug("Restarting OctoDash due to instance change")
-		import subprocess
 		import shlex
+		import subprocess
 		try:
 			subprocess.run(shlex.split("sudo service getty@tty1 restart"))
 		except subprocess.CalledProcessError as e:
