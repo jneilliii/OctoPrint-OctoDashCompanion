@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "OctoDash-Companion"
-version = "0.0.7"
+version = "0.1.0"
 description = "Plugin that allows editing of some configuration settings for OctoDash, specifically Custom Actions."
 authors = [
     { name = "jneilliii", email = "jneilliii+github@gmail.com" },
