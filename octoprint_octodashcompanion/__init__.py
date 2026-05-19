@@ -1,21 +1,18 @@
-# coding=utf-8
-from __future__ import absolute_import
-
-import octoprint.plugin
-import octoprint.filemanager.util
-from flask_babel import gettext
-from octoprint.filemanager import FileDestinations
-from octoprint.util.paths import normalize
-from octoprint.events import Events
-from octoprint.util import dict_merge
-from octoprint.access.permissions import Permissions, ADMIN_GROUP
-import flask
-import os
-import sys
-import shutil
 import json
+import os
 import re
-from datetime import datetime, timezone
+import shutil
+import sys
+from datetime import datetime
+
+import flask
+import octoprint.plugin
+from flask_babel import gettext
+from octoprint.access.permissions import ADMIN_GROUP, Permissions
+from octoprint.events import Events
+from octoprint.filemanager import FileDestinations
+from octoprint.util import dict_merge
+from octoprint.util.paths import normalize
 
 
 class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
@@ -151,8 +148,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 	@octoprint.plugin.BlueprintPlugin.route("restart")
 	def restart_route(self):
 		self._logger.debug("Restart OctoDash request received")
-		import subprocess
 		import shlex
+		import subprocess
 		try:
 			subprocess.run(shlex.split("sudo service getty@tty1 restart"))
 		except subprocess.CalledProcessError as e:
@@ -193,8 +190,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 			self._event_bus.fire(Events.SETTINGS_UPDATED)
 
 		self._logger.debug("Restarting OctoDash due to instance change")
-		import subprocess
 		import shlex
+		import subprocess
 		try:
 			subprocess.run(shlex.split("sudo service getty@tty1 restart"))
 		except subprocess.CalledProcessError as e:
@@ -204,6 +201,9 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		return flask.jsonify({"instance_url": instance_url})
 
 	def is_blueprint_protected(self):
+		return False
+
+	def is_blueprint_csrf_protected(self):
 		return False
 
 	# ~~ Access Permissions Hook
@@ -219,6 +219,8 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 		]
 
 	# ~~ SimpleApiPlugin mixin
+	def is_api_protected(self):
+		return True
 
 	def get_api_commands(self):
 		return dict(
@@ -260,6 +262,9 @@ class OctodashcompanionPlugin(octoprint.plugin.SettingsPlugin,
 
 	def get_template_vars(self):
 		return {"plugin_version": self._plugin_version}
+
+	def is_template_autoescaped(self):
+		return True
 
 	# ~~ GCode Received hook
 
